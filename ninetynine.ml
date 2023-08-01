@@ -27,21 +27,50 @@ let rec elim_dupl_help lst res =
   | [] -> res
   | hd::tl ->
       if List.mem hd res then
-        elim_dupl_help tl res (add_dup hd out)
+        elim_dupl_help tl res
       else
-        elim_dupl_help tl (res @ [hd]) (out @ [[hd]])
+        elim_dupl_help tl (res @ [hd])
 
-let elim_dupl lst = elim_dupl_help lst [] []
+let elim_dupl lst = elim_dupl_help lst []
+
+(* Can we rewrite this as a fold left?*)
+let is_dup rest last =
+  if List.mem last rest then
+    rest
+  else
+    rest @ [last]
+
+let elim_dupl_tr lst = List.fold_left is_dup [] lst
 
 (*P09*)
+let rec add_dup in' out el =
+  match in' with
+  | [] -> out
+  | hd::tl -> 
+      if (List.hd hd = el) then
+        add_dup tl (out @ [hd @ [el]]) el
+      else
+        add_dup tl (out @ [hd]) el
+
 let rec pack_dupl_help lst dup out = 
   match lst with
   | [] -> out
   | hd::tl ->
       if List.mem hd dup then
-        pack_dupl_help tl dup 
+        pack_dupl_help tl dup (add_dup out [] hd)
+      else
+        pack_dupl_help tl (dup @ [hd]) (out @ [[hd]])
+
+let pack_dupl lst = pack_dupl_help lst [] []
+
+(*P10*)
+let rle_help ls = (List.length ls, List.hd ls)
+
+let run_length_encoding lst = 
+  let ls = pack_dupl lst in
+    List.map rle_help ls
 
 let () =
   let ls = [1; 2; 3; 3; 3; 4; 4; 99] in
-  let fl = (ls |> elim_dupl) in
-  List.iter print_int fl
+  let fl = run_length_encoding ls in
+  List.iter (fun x -> print_int (fst x)) fl
