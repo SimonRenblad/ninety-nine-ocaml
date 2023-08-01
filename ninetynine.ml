@@ -42,8 +42,9 @@ let is_dup rest last =
 
 let elim_dupl_tr lst = List.fold_left is_dup [] lst
 
-(*P09*)
-let rec add_dup in' out el =
+(*P09*) 
+(*Not the solution that was asked for... modify*) 
+(*let rec add_dup in' out el =
   match in' with
   | [] -> out
   | hd::tl -> 
@@ -61,7 +62,7 @@ let rec pack_dupl_help lst dup out =
       else
         pack_dupl_help tl (dup @ [hd]) (out @ [[hd]])
 
-let pack_dupl lst = pack_dupl_help lst [] []
+let pack_dupl lst = pack_dupl_help lst [] []*)
 
 (*P10*)
 let rle_help ls = (List.length ls, List.hd ls)
