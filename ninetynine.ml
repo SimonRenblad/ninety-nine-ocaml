@@ -223,3 +223,69 @@ let rnd_select ls num =
   in
   rnd_select_help ls [] num
 
+(*P24 Lotto*)
+
+let lotto s e num =
+  let r = my_range s e in
+  rnd_select r num
+
+(*P25 generate a random permutation of the elements of a list*)
+
+let rnd_permu ls =
+  rnd_select ls (List.length ls)
+
+(*P26 gen the combos of K objects from N in list*)
+
+let rec combination k ls =
+    if k = 0 then [ [] ]
+    else match ls with
+         | [] -> []
+         | h :: tl ->
+            let with_h = List.map (fun x -> h :: x) (combination (k-1) tl) in
+            let without_h = combination k tl in
+            with_h @ without_h
+
+(*P27 join into distinct subsets *)
+(*
+  The idea is to choose for the first item, choose with the remaining items -> etc
+*)
+let rec group sizes ls =
+  if sizes = [] then [ [] ]
+  else
+    let size = List.hd sizes in
+    let rest = List.tl sizes in
+    let combs = combination size ls in
+    let comb_f comb =  
+      let remaining = 
+        List.filter (fun x -> not (List.mem x comb)) ls 
+      in
+      List.map (fun groups -> comb :: groups) (group rest remaining)
+    in
+    combs |> List.map comb_f |> List.flatten
+
+(*P28 sort a list of lists according to sublist length*)
+let rec merge xs ys =
+  match xs, ys with
+  | [], _ -> ys
+  | _, [] -> xs
+  | x::xs', y::ys' ->
+      if (List.length x) < (List.length y) then 
+        x :: merge xs' ys
+      else
+        y :: merge xs ys'
+
+let rec split = function
+  | [] -> [], []
+  | [x] -> [x], []
+  | x::y::xs ->
+      let xs', ys' = split xs in
+      x::xs', y::ys'
+
+let rec merge_sort_sublist = function
+  | [] -> []
+  | [x] -> [x]
+  | xs ->
+      let xs, ys = split xs in
+      merge (merge_sort_sublist xs) (merge_sort_sublist ys)
+
+(*P31 is-prime*)
